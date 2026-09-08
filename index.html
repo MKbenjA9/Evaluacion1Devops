@@ -32,7 +32,7 @@
         </p>
 
         <p class="line boot dim">
-          Escribe un comando o presiona el botón para continuar.
+          Selecciona una categoría o presiona el botón para continuar.
         </p>
 
         <p class="line prompt-line" id="output-anchor"></p>
@@ -41,12 +41,12 @@
       <footer class="input-row">
         <span class="prompt">devops@aula:~$</span>
 
-        <select id="category-filter" class="category-filter">
-          <option value="Todas">Todas</option>
-          <option value="Git">Git</option>
-          <option value="DevOps">DevOps</option>
-          <option value="CI/CD">CI/CD</option>
-          <option value="Colaboración">Colaboración</option>
+        <select id="category-filter" class="category-filter" aria-label="Filtrar por categoría">
+          <option value="todas">-- todas las categorías --</option>
+          <option value="git">git</option>
+          <option value="ci-cd">ci-cd</option>
+          <option value="cultura">cultura</option>
+          <option value="infraestructura">infraestructura</option>
         </select>
 
         <button id="run-btn" class="run-btn" type="button">
