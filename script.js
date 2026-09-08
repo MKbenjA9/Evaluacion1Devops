@@ -10,21 +10,60 @@
     "(prefers-reduced-motion: reduce)"
   ).matches;
 
+  const DEFAULT_FALLBACK_PHRASE = {
+    text: "Un commit sin mensaje claro es una promesa que le hiciste a tu yo del futuro.",
+    author: "Anónimo DevOps"
+  };
+
   const history = [];
 
-  countEl.textContent = Array.isArray(PHRASES) ? PHRASES.length : 0;
+  // Filtrado defensivo: solo almacena frases válidas con texto y autor no vacíos
+  const validPhrases = Array.isArray(PHRASES)
+    ? PHRASES.filter(
+        (item) =>
+          item &&
+          typeof item.text === "string" &&
+          item.text.trim().length > 0 &&
+          typeof item.author === "string" &&
+          item.author.trim().length > 0
+      )
+    : [];
+
+  countEl.textContent = validPhrases.length;
 
   function pickRandomPhrase() {
-    if (!Array.isArray(PHRASES) || PHRASES.length === 0) {
-      return { text: "No hay frases cargadas en phrases.js todavía.", author: "sistema" };
+    if (validPhrases.length === 0) {
+      return DEFAULT_FALLBACK_PHRASE;
     }
-    // Evita repetir la misma frase dos veces seguidas si hay más de una.
+
+    // Evita repetir la misma frase dos veces seguidas si hay más de una disponible.
     let choice;
+    let attempts = 0;
+    const maxAttempts = 10;
+
     do {
-      choice = PHRASES[Math.floor(Math.random() * PHRASES.length)];
-    } while (PHRASES.length > 1 && history[history.length - 1] === choice);
+      choice = validPhrases[Math.floor(Math.random() * validPhrases.length)];
+      attempts++;
+    } while (
+      validPhrases.length > 1 &&
+      history[history.length - 1] === choice &&
+      attempts < maxAttempts
+    );
+
     history.push(choice);
-    return choice;
+
+    // Retorno defensivo con sanitización final
+    const safeText =
+      choice && typeof choice.text === "string" && choice.text.trim().length > 0
+        ? choice.text.trim()
+        : DEFAULT_FALLBACK_PHRASE.text;
+
+    const safeAuthor =
+      choice && typeof choice.author === "string" && choice.author.trim().length > 0
+        ? choice.author.trim()
+        : DEFAULT_FALLBACK_PHRASE.author;
+
+    return { text: safeText, author: safeAuthor };
   }
 
   function scrollToBottom() {
