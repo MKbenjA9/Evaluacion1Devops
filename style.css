@@ -23,9 +23,12 @@
           Consolas, "Liberation Mono", Menlo, monospace;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   background: var(--bg);
@@ -89,7 +92,10 @@ body {
   border-bottom: 1px solid var(--amber-low);
 }
 
-.dots { display: flex; gap: 7px; }
+.dots {
+  display: flex;
+  gap: 7px;
+}
 
 .dot {
   width: 11px;
@@ -98,9 +104,18 @@ body {
   display: inline-block;
   background: var(--amber-low);
 }
-.dot-r { background: #5A2323; }
-.dot-y { background: #5A4A12; }
-.dot-g { background: #234A26; }
+
+.dot-r {
+  background: #5A2323;
+}
+
+.dot-y {
+  background: #5A4A12;
+}
+
+.dot-g {
+  background: #234A26;
+}
 
 .titlebar-name {
   font-size: 12px;
@@ -118,16 +133,29 @@ body {
   line-height: 1.65;
 }
 
-.line { margin: 0 0 8px; white-space: pre-wrap; word-break: break-word; }
-.dim { color: var(--amber-dim); }
-.boot { animation: fade-in 320ms ease both; }
+.line {
+  margin: 0 0 8px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 
-.prompt-line { display: block; }
+.dim {
+  color: var(--amber-dim);
+}
+
+.boot {
+  animation: fade-in 320ms ease both;
+}
+
+.prompt-line {
+  display: block;
+}
 
 .query-line {
   color: var(--green);
   margin: 14px 0 6px;
 }
+
 .query-line::before {
   content: "▸ ";
   color: var(--amber-dim);
@@ -160,8 +188,14 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cursor { animation: none; opacity: 1; }
-  .boot { animation: none; }
+  .cursor {
+    animation: none;
+    opacity: 1;
+  }
+
+  .boot {
+    animation: none;
+  }
 }
 
 /* ---------- input row ---------- */
@@ -180,6 +214,30 @@ body {
   font-size: 14px;
 }
 
+/* ---------- category filter ---------- */
+
+.category-filter {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--amber);
+  background: var(--bg-panel);
+  border: 1px solid var(--amber-low);
+  border-radius: 4px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.category-filter:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 3px;
+}
+
+.category-filter:hover {
+  border-color: var(--amber);
+}
+
+/* ---------- run button ---------- */
+
 .run-btn {
   font-family: var(--mono);
   font-size: 14px;
@@ -191,7 +249,10 @@ body {
   cursor: pointer;
   font-weight: 700;
   letter-spacing: 0.01em;
-  transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
   box-shadow: 0 0 0 rgba(255, 176, 0, 0);
 }
 
@@ -200,7 +261,9 @@ body {
   box-shadow: 0 0 18px rgba(255, 176, 0, 0.35);
 }
 
-.run-btn:active { transform: scale(0.97); }
+.run-btn:active {
+  transform: scale(0.97);
+}
 
 .run-btn:focus-visible {
   outline: 2px solid var(--amber);
@@ -234,20 +297,40 @@ kbd {
   margin: 4px 0 0;
 }
 
+/* ---------- animations ---------- */
+
 @keyframes blink {
-  0%, 49% { opacity: 1; }
-  50%, 100% { opacity: 0; }
+  0%, 49% {
+    opacity: 1;
+  }
+
+  50%, 100% {
+    opacity: 0;
+  }
 }
 
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(2px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(2px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ---------- scrollbar (webkit) ---------- */
 
-.screen::-webkit-scrollbar { width: 8px; }
-.screen::-webkit-scrollbar-track { background: transparent; }
+.screen::-webkit-scrollbar {
+  width: 8px;
+}
+
+.screen::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .screen::-webkit-scrollbar-thumb {
   background: var(--amber-low);
   border-radius: 4px;
@@ -256,7 +339,20 @@ kbd {
 /* ---------- responsive ---------- */
 
 @media (max-width: 480px) {
-  .screen { font-size: 14px; padding: 16px 16px 6px; }
-  .titlebar-name { display: none; }
-  .hint { display: none; }
+  .screen {
+    font-size: 14px;
+    padding: 16px 16px 6px;
+  }
+
+  .titlebar-name {
+    display: none;
+  }
+
+  .hint {
+    display: none;
+  }
+
+  .category-filter {
+    max-width: 100%;
+  }
 }

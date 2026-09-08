@@ -5,6 +5,7 @@
   const anchor = document.getElementById("output-anchor");
   const runBtn = document.getElementById("run-btn");
   const countEl = document.getElementById("phrase-count");
+  const categoryFilter = document.getElementById("category-filter");
 
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
@@ -16,14 +17,45 @@
 
   function pickRandomPhrase() {
     if (!Array.isArray(PHRASES) || PHRASES.length === 0) {
-      return { text: "No hay frases cargadas en phrases.js todavía.", author: "sistema" };
+      return {
+        text: "No hay frases cargadas en phrases.js todavía.",
+        author: "sistema",
+        category: "Sistema"
+      };
     }
-    // Evita repetir la misma frase dos veces seguidas si hay más de una.
+
+    const selectedCategory = categoryFilter.value;
+
+    const availablePhrases =
+      selectedCategory === "Todas"
+        ? PHRASES
+        : PHRASES.filter(
+            (phrase) => phrase.category === selectedCategory
+          );
+
+    if (availablePhrases.length === 0) {
+      return {
+        text: "No hay frases disponibles para esta categoría.",
+        author: "sistema",
+        category: selectedCategory
+      };
+    }
+
+    // Evita repetir la misma frase dos veces seguidas.
     let choice;
+
     do {
-      choice = PHRASES[Math.floor(Math.random() * PHRASES.length)];
-    } while (PHRASES.length > 1 && history[history.length - 1] === choice);
+      choice =
+        availablePhrases[
+          Math.floor(Math.random() * availablePhrases.length)
+        ];
+    } while (
+      availablePhrases.length > 1 &&
+      history[history.length - 1] === choice
+    );
+
     history.push(choice);
+
     return choice;
   }
 
@@ -38,7 +70,9 @@
         resolve();
         return;
       }
+
       let i = 0;
+
       const cursor = document.createElement("span");
       cursor.className = "cursor";
       el.after(cursor);
@@ -46,7 +80,9 @@
       const tick = () => {
         el.textContent = text.slice(0, i);
         i += 1;
+
         scrollToBottom();
+
         if (i <= text.length) {
           requestAnimationFrame(() => setTimeout(tick, speed));
         } else {
@@ -54,6 +90,7 @@
           resolve();
         }
       };
+
       tick();
     });
   }
@@ -64,33 +101,45 @@
     const query = document.createElement("p");
     query.className = "line query-line";
     screen.insertBefore(query, anchor);
+
     await typeText(query, "devops --quote", 22);
 
     const loading = document.createElement("p");
     loading.className = "line dim";
     loading.textContent = "Consultando base de datos...";
+
     screen.insertBefore(loading, anchor);
     scrollToBottom();
 
-    await new Promise((r) => setTimeout(r, prefersReducedMotion ? 0 : 420));
+    await new Promise((r) =>
+      setTimeout(r, prefersReducedMotion ? 0 : 420)
+    );
+
     loading.remove();
 
     const phrase = pickRandomPhrase();
 
     const block = document.createElement("div");
     block.className = "quote-block";
+
     const textEl = document.createElement("span");
     block.appendChild(textEl);
+
     const authorEl = document.createElement("span");
     authorEl.className = "quote-author";
-    authorEl.textContent = "— " + phrase.author;
+
+    authorEl.textContent =
+      "— " + phrase.author + " · " + phrase.category;
+
     authorEl.style.opacity = "0";
+
     block.appendChild(authorEl);
 
     screen.insertBefore(block, anchor);
     scrollToBottom();
 
     await typeText(textEl, phrase.text, 14);
+
     authorEl.style.transition = "opacity 260ms ease";
     authorEl.style.opacity = "1";
 
@@ -101,7 +150,11 @@
   runBtn.addEventListener("click", runQuery);
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !runBtn.disabled) {
+    if (
+      e.key === "Enter" &&
+      !runBtn.disabled &&
+      document.activeElement !== categoryFilter
+    ) {
       runQuery();
     }
   });
