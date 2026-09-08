@@ -83,5 +83,20 @@ Estética de terminal fósforo ámbar (monitor CRT retro), con animación de esc
 
 ## 👥 Autores
 
-- Integrante 1 — nombre
-- Integrante 2 — nombre
+- Integrante 1 — Benjamin Jerez
+- Integrante 2 — Dylan Monroy
+- Integrante 3 — Nicolas Silva
+
+
+## Estrategia de Ramificación: GitFlow
+
+Para la gestión del control de versiones de este microservicio, hemos implementado la estrategia **GitFlow**. Esta elección técnica se justifica porque permite una estricta separación de entornos y un ciclo de vida de desarrollo altamente organizado, ideal para integraciones CI/CD:
+
+*   **Ramas principales y de integración:** 
+    *   `main`: Contiene exclusivamente código estable, probado y listo para el entorno de producción.
+    *   `develop`: Actúa como la rama de integración principal donde se unifica todo el código nuevo antes de pasar a producción.
+*   **Ramas de soporte:**
+    *   `feature/*`: Se utilizan para desarrollar nuevas funcionalidades de forma aislada (ej. `feature/agregar-filtro-categorias`). Nacen de `develop` y se reintegran a esta mediante Pull Requests, asegurando la revisión del código en equipo.
+    *   `hotfix/*`: Se reservan para resolver errores críticos en producción (ej. `hotfix/corregir-frase-vacia`). Bifurcan directamente desde `main` y, una vez solucionado el fallo, los cambios se fusionan tanto en `main` como en `develop` para evitar regresiones.
+
+Esta estructura asegura la trazabilidad del código fuente, minimiza los conflictos en escenarios colaborativos y prepara la base perfecta para las futuras automatizaciones de despliegue.
