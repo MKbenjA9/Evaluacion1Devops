@@ -111,4 +111,6 @@ La implementación de la estrategia de ramificación nos ha permitido organizar 
 ### Dylan Monroy
 
 
-### Nicolas Silva
+### Nicolas Silva
+El desarrollo de este proyecto evidenció la importancia de adoptar buenas prácticas de DevOps desde etapas tempranas. Establecer un flujo de trabajo estructurado y ordenado facilitó la colaboración en equipo y dejó las bases listas para futuras automatizaciones de integración y entrega continua.
+
