@@ -100,3 +100,15 @@ Para la gestión del control de versiones de este microservicio, hemos implement
     *   `hotfix/*`: Se reservan para resolver errores críticos en producción (ej. `hotfix/corregir-frase-vacia`). Bifurcan directamente desde `main` y, una vez solucionado el fallo, los cambios se fusionan tanto en `main` como en `develop` para evitar regresiones.
 
 Esta estructura asegura la trazabilidad del código fuente, minimiza los conflictos en escenarios colaborativos y prepara la base perfecta para las futuras automatizaciones de despliegue.
+
+---
+
+## Conclusiones
+
+### Benjamin Jerez
+La implementación de la estrategia de ramificación nos ha permitido organizar el código de manera ordenada y colaborar sin generar conflictos graves, estableciendo una buena base para el futuro.
+
+### Dylan Monroy
+
+
+### Nicolas Silva
