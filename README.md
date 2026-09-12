@@ -109,8 +109,8 @@ Esta estructura asegura la trazabilidad del código fuente, minimiza los conflic
 La implementación de la estrategia de ramificación nos ha permitido organizar el código de manera ordenada y colaborar sin generar conflictos graves, estableciendo una buena base para el futuro.
 
 ### Dylan Monroy
-
+Definir convenciones estrictas para los commits y el nombrado de ramas fue clave para mantener un historial limpio y comprensible para todo el equipo. Además, el uso de Pull Requests como filtro de calidad nos demostró que la revisión de código es un pilar fundamental para evitar errores en producción y asegurar una integración continua (CI) exitosa.
 
 ### Nicolas Silva
 El desarrollo de este proyecto evidenció la importancia de adoptar buenas prácticas de DevOps desde etapas tempranas. Establecer un flujo de trabajo estructurado y ordenado facilitó la colaboración en equipo y dejó las bases listas para futuras automatizaciones de integración y entrega continua.
-
+
