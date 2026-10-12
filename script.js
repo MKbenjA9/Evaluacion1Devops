@@ -4,6 +4,7 @@
   const screen = document.getElementById("screen");
   const anchor = document.getElementById("output-anchor");
   const runBtn = document.getElementById("run-btn");
+  const clearBtn = document.getElementById("clear-btn");
   const countEl = document.getElementById("phrase-count");
 
   const prefersReducedMotion = window.matchMedia(
@@ -98,7 +99,16 @@
     scrollToBottom();
   }
 
+  function clearScreen() {
+    const printedElements = screen.querySelectorAll(".query-line, .quote-block");
+    printedElements.forEach((el) => el.remove());
+  }
+
   runBtn.addEventListener("click", runQuery);
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", clearScreen);
+  }
 
   window.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && !runBtn.disabled) {

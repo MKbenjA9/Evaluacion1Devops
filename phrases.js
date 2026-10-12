@@ -7,7 +7,7 @@
  */
 
 const PHRASES = [
-  { text: "Un commit sin mensaje claro es una promesa que le hiciste a tu yo del futuro y no vas a cumplir.", author: "Banco inicial" },
+  { text: "Un commit sin mensaje claro es una promesa que le hiciste a tu yo del futuro y no vas a cumplir.", author: "Anónimo DevOps" },
   { text: "La rama main no perdona: por eso existen las otras ramas.", author: "Banco inicial" },
   { text: "DevOps no es instalar Docker. Es que Dev y Ops se hablen antes de que algo se caiga.", author: "Banco inicial" },
   { text: "Si funciona en tu máquina, felicitaciones: acabas de descubrir un nuevo entorno de producción.", author: "Banco inicial" },

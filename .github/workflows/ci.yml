@@ -1,0 +1,43 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  validate:
+    name: Linting & Integrity Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar entorno Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Verificar sintaxis de JavaScript (node --check)
+        run: |
+          echo "🔍 Verificando sintaxis de archivos JavaScript..."
+          node --check script.js
+          node --check phrases.js
+          echo "✅ Todos los archivos JavaScript tienen sintaxis válida."
+
+      - name: Validar ausencia de dependencias externas (Vanilla JS Policy)
+        run: |
+          echo "🔍 Validando que no existan archivos de dependencias ni gestores de paquetes..."
+          FORBIDDEN_FILES=("package.json" "package-lock.json" "yarn.lock" "pnpm-lock.yaml" "node_modules")
+          for file in "${FORBIDDEN_FILES[@]}"; do
+            if [ -e "$file" ]; then
+              echo "❌ ERROR: Se detectó el archivo prohibido '$file'. El proyecto debe ser 100% Vanilla JS sin dependencias externas."
+              exit 1
+            fi
+          done
+          echo "✅ Verificación exitosa: Proyecto 100% Vanilla JS puro sin dependencias."
