@@ -286,5 +286,34 @@ La implementación formal de GitFlow y el uso de Pull Requests nos permitió ord
 ### Dylan Monroy
 La adopción de GitHub Actions como puerta de enlace obligatoria demostró la importancia del *Shift-Left Testing*. El pipeline nos garantiza que ningún cambio con errores de sintaxis o dependencias accidentales pueda integrarse a las ramas protegidas, ahorrando tiempo en depuración manual.
 
+## Estrategia de Ramificación: GitFlow
+
+Para la gestión del control de versiones de este proyecto, hemos implementado la estrategia **GitFlow**, ya que permite organizar el desarrollo, integrar las funcionalidades de forma controlada y mantener una versión estable para producción.
+
+- **Ramas principales y de integración:**
+  - `main`: contiene el código estable, probado y listo para producción.
+  - `develop`: integra las funcionalidades y correcciones antes de su incorporación a producción.
+
+- **Ramas de soporte:**
+  - `feature/*`: permiten desarrollar nuevas funcionalidades de forma aislada. Se crean desde `develop` y se integran mediante Pull Requests. Ejemplo: `feature/agregar-filtro-categorias`.
+  - `hotfix/*`: se utilizan para corregir errores críticos detectados en producción. Se crean desde `main` y, una vez validadas, sus cambios se integran tanto en `main` como en `develop`.
+
+Esta estructura mejora la trazabilidad del código, facilita la colaboración entre los integrantes y reduce el riesgo de introducir errores durante las integraciones.
+
+---
+
+## Conclusiones
+
+### Benjamin Jerez
+
+La implementación de la estrategia de ramificación nos ha permitido organizar el código de manera ordenada y colaborar sin generar conflictos graves, estableciendo una buena base para el futuro.
+
+### Dylan Monroy
+
+Definir convenciones para los commits y el nombrado de ramas fue importante para mantener un historial limpio y comprensible. Además, el uso de Pull Requests como mecanismo de revisión nos permitió comprender la importancia de verificar los cambios antes de incorporarlos al proyecto.
+
 ### Nicolas Silva
-La separación de responsabilidades entre ramas de funcionalidades (`feature/*`) y correcciones urgentes (`hotfix/*`), sumado a la documentación exhaustiva de convenciones de commits, facilitó que las contribuciones de los tres integrantes se unificaran sin pérdidas de código ni regresiones en la interfaz.
+
+El desarrollo de este proyecto evidenció la importancia de adoptar buenas prácticas de DevOps desde etapas tempranas. La separación de responsabilidades entre ramas de funcionalidades (`feature/*`) y correcciones urgentes (`hotfix/*`), junto con la documentación de las convenciones de trabajo, contribuye a una colaboración más organizada y a una integración controlada de los cambios.
+
+La experiencia también nos permitió comprender que desarrollar una funcionalidad no es suficiente: es necesario revisarla, probarla e integrarla correctamente para que forme parte del producto final.
