@@ -6,6 +6,7 @@
   const runBtn = document.getElementById("run-btn");
   const clearBtn = document.getElementById("clear-btn");
   const countEl = document.getElementById("phrase-count");
+  const categoryFilter = document.getElementById("category-filter");
 
   const prefersReducedMotion = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
@@ -13,40 +14,87 @@
 
   const DEFAULT_FALLBACK_PHRASE = {
     text: "Un commit sin mensaje claro es una promesa que le hiciste a tu yo del futuro.",
-    author: "Anónimo DevOps"
+    author: "Anónimo DevOps",
+    category: "general"
   };
 
   const history = [];
 
-  // Filtrado defensivo: solo almacena frases válidas con texto y autor no vacíos
-  const validPhrases = Array.isArray(PHRASES)
-    ? PHRASES.filter(
-        (item) =>
-          item &&
-          typeof item.text === "string" &&
-          item.text.trim().length > 0 &&
-          typeof item.author === "string" &&
-          item.author.trim().length > 0
-      )
-    : [];
+  // Filtrado defensivo: solo procesa frases con texto y autor no vacíos
+  function getSanitizedPhrases() {
+    if (!Array.isArray(PHRASES)) {
+      return [];
+    }
+    return PHRASES.filter(
+      (item) =>
+        item &&
+        typeof item.text === "string" &&
+        item.text.trim().length > 0 &&
+        typeof item.author === "string" &&
+        item.author.trim().length > 0
+    );
+  }
 
-  countEl.textContent = validPhrases.length;
-
-  function pickRandomPhrase() {
+  function getAvailablePhrases() {
+    const validPhrases = getSanitizedPhrases();
     if (validPhrases.length === 0) {
-      return DEFAULT_FALLBACK_PHRASE;
+      return [];
     }
 
-    // Evita repetir la misma frase dos veces seguidas si hay más de una disponible.
+    const selectedCategory = categoryFilter
+      ? categoryFilter.value.toLowerCase()
+      : "todas";
+
+    if (selectedCategory === "todas" || selectedCategory === "all") {
+      return validPhrases;
+    }
+
+    return validPhrases.filter(
+      (item) =>
+        item &&
+        typeof item.category === "string" &&
+        item.category.toLowerCase() === selectedCategory
+    );
+  }
+
+  function updatePhraseCount() {
+    const available = getAvailablePhrases();
+    if (countEl) {
+      countEl.textContent = available.length;
+    }
+  }
+
+  updatePhraseCount();
+
+  if (categoryFilter) {
+    categoryFilter.addEventListener("change", updatePhraseCount);
+  }
+
+  function pickRandomPhrase() {
+    const availablePhrases = getAvailablePhrases();
+
+    if (availablePhrases.length === 0) {
+      const selectedCategory = categoryFilter ? categoryFilter.value : "todas";
+      if (selectedCategory === "todas") {
+        return DEFAULT_FALLBACK_PHRASE;
+      }
+      return {
+        text: "No hay frases disponibles para la categoría seleccionada.",
+        author: "sistema",
+        category: selectedCategory
+      };
+    }
+
+    // Evita repetir la misma frase dos veces seguidas si hay más de una disponible
     let choice;
     let attempts = 0;
     const maxAttempts = 10;
 
     do {
-      choice = validPhrases[Math.floor(Math.random() * validPhrases.length)];
+      choice = availablePhrases[Math.floor(Math.random() * availablePhrases.length)];
       attempts++;
     } while (
-      validPhrases.length > 1 &&
+      availablePhrases.length > 1 &&
       history[history.length - 1] === choice &&
       attempts < maxAttempts
     );
@@ -64,7 +112,12 @@
         ? choice.author.trim()
         : DEFAULT_FALLBACK_PHRASE.author;
 
-    return { text: safeText, author: safeAuthor };
+    const safeCategory =
+      choice && typeof choice.category === "string" && choice.category.trim().length > 0
+        ? choice.category.trim()
+        : "general";
+
+    return { text: safeText, author: safeAuthor, category: safeCategory };
   }
 
   function scrollToBottom() {
@@ -101,10 +154,16 @@
   async function runQuery() {
     runBtn.disabled = true;
 
+    const selectedCat = categoryFilter ? categoryFilter.value : "todas";
+    const commandText =
+      selectedCat === "todas"
+        ? "devops --quote"
+        : `devops --quote --category=${selectedCat}`;
+
     const query = document.createElement("p");
     query.className = "line query-line";
     screen.insertBefore(query, anchor);
-    await typeText(query, "devops --quote", 22);
+    await typeText(query, commandText, 20);
 
     const loading = document.createElement("p");
     loading.className = "line dim";
@@ -112,7 +171,7 @@
     screen.insertBefore(loading, anchor);
     scrollToBottom();
 
-    await new Promise((r) => setTimeout(r, prefersReducedMotion ? 0 : 420));
+    await new Promise((r) => setTimeout(r, prefersReducedMotion ? 0 : 400));
     loading.remove();
 
     const phrase = pickRandomPhrase();
@@ -123,7 +182,8 @@
     block.appendChild(textEl);
     const authorEl = document.createElement("span");
     authorEl.className = "quote-author";
-    authorEl.textContent = "— " + phrase.author;
+    const categoryTag = phrase.category ? ` · [${phrase.category}]` : "";
+    authorEl.textContent = `— ${phrase.author}${categoryTag}`;
     authorEl.style.opacity = "0";
     block.appendChild(authorEl);
 
@@ -150,7 +210,11 @@
   }
 
   window.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !runBtn.disabled) {
+    if (
+      e.key === "Enter" &&
+      !runBtn.disabled &&
+      document.activeElement !== categoryFilter
+    ) {
       runQuery();
     }
   });
