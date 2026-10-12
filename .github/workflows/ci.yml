@@ -9,6 +9,9 @@ on:
       - main
       - develop
 
+permissions:
+  contents: read
+
 jobs:
   validate:
     name: Linting & Integrity Check
@@ -17,6 +20,18 @@ jobs:
     steps:
       - name: Checkout del repositorio
         uses: actions/checkout@v4
+
+      - name: Validar presencia de archivos obligatorios del proyecto
+        run: |
+          echo "🔍 Verificando estructura obligatoria del proyecto..."
+          REQUIRED_FILES=("index.html" "style.css" "script.js" "phrases.js" "README.md")
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ ERROR: Falta el archivo esencial requerido '$file'."
+              exit 1
+            fi
+          done
+          echo "✅ Todos los archivos base requeridos están presentes."
 
       - name: Configurar entorno Node.js
         uses: actions/setup-node@v4
