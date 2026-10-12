@@ -1,319 +1,253 @@
-# devops-wisdom 🖥️
+# devops-wisdom 🖥️ — Evaluación Parcial N.º 2 DevOps (DOY0101)
 
-**devops-wisdom** es una aplicación web interactiva que genera y expone frases reflexivas, humorísticas e instructivas sobre la cultura DevOps, control de versiones con Git, integración continua (CI/CD) y colaboración en equipos de ingeniería de software. 
+**devops-wisdom** es una aplicación web interactiva que genera y expone frases reflexivas sobre la cultura DevOps, control de versiones con Git, integración continua (CI/CD) y colaboración en equipos de ingeniería de software.
 
-La interfaz simula la experiencia visual y operativa de una consola de terminal UNIX retro con monitor CRT de fósforo ámbar, renderizando cada sentencia con un efecto de escritura dinámica letra por letra (*typewriter effect*).
+La interfaz simula una consola de terminal UNIX retro con monitor CRT de fósforo ámbar (`#FFB000`), renderizando cada sentencia con un efecto dinámico de escritura letra por letra (*typewriter effect*).
 
-### Objetivo del proyecto
-El propósito central de este proyecto es servir como caso de estudio y plataforma práctica para la adopción rigurosa de metodologías DevOps:
-- Aplicación de un modelo estructurado de control de versiones con **GitFlow**.
-- Colaboración efectiva en equipo mediante **GitHub Pull Requests** y revisiones de código asistidas por pares.
-- Implementación de un pipeline de **Integración Continua (CI)** con **GitHub Actions** que salvaguarde la calidad del código y la política de cero dependencias en cada integración.
-- Entrega de un producto liviano, accesible y ejecutable en cualquier navegador sin dependencias ni compiladores externos.
+Este proyecto implementa los estándares de la **Evaluación Parcial N.º 2 de Ingeniería DevOps**, incorporando un pipeline integral de CI/CD automatizado, contenerización con Docker, pruebas unitarias automatizadas, análisis de seguridad estático (SAST), gobernanza de dependencias con Dependabot y orquestación reproducible con Docker Compose.
 
 ---
 
-## ⚡ Funcionalidades
+## ⚡ 1. Funcionalidades de la aplicación
 
-El producto unificado integra todas las características desarrolladas por el equipo:
-
-1. **Generador dinámico de frases (`devops --quote`):** Selección aleatoria de frases de sabiduría DevOps evitando repeticiones consecutivas.
-2. **Filtro de frases por categorías:** Menú desplegable interactivo que permite clasificar y consultar frases según los dominios clave de DevOps:
-   - `git`: Control de versiones, estrategias de ramas y commits.
-   - `ci-cd`: Pipelines, automatización, validaciones y pruebas.
-   - `cultura`: Colaboración, comunicación entre equipos y gestión de incidentes.
-   - `infraestructura`: Servidores, contenedores e infraestructura como código (IaC).
-   - `todas`: Consulta global en todo el catálogo de frases.
-3. **Comando parametrizado en terminal:** Al filtrar por categoría, la terminal simula la ejecución real con el argumento correspondiente (ej. `devops --quote --category=ci-cd`).
-4. **Contador dinámico de entradas:** Indicador en tiempo real del número de frases disponibles según la categoría seleccionada.
-5. **Limpieza de pantalla (`clear`):** Botón dedicado en el pie de la terminal para despejar la consola de consultas previas sin perder el estado ni recargar el sitio.
-6. **Manejo defensivo y estado sin resultados:**
-   - Sanitización de entradas para descartar frases vacías o con autores no definidos.
-   - Mensaje informativo claro en caso de que una categoría no contenga elementos o el banco de datos sufra anomalías.
-   - Frase de fallback segura para garantizar que la terminal nunca quede en blanco o emita texto indefinido.
-7. **Control por teclado y accesibilidad:**
-   - Ejecución rápida mediante la tecla <kbd>Enter</kbd> (deshabilitada cuando el foco está en el selector de categoría para permitir navegación accesible).
-   - Respeto del estándar `prefers-reduced-motion` del sistema operativo: omite la animación de escritura si el usuario tiene deshabilitadas las animaciones por accesibilidad.
-8. **Diseño retro responsivo:** Monitor CRT de fósforo ámbar con líneas de barrido (*scanlines*), barra de título con controles estilo ventana y adaptabilidad fluida a pantallas móviles.
+1. **Generador dinámico de frases (`devops --quote`):** Selección aleatoria de frases evitando repeticiones consecutivas.
+2. **Filtro interactivo por categorías:** Clasificación por dominios clave: `git`, `ci-cd`, `cultura`, `infraestructura` y `todas`.
+3. **Comando parametrizado en terminal:** Reflejo dinámico del comando con su bandera en consola (ej. `devops --quote --category=ci-cd`).
+4. **Contador en tiempo real:** Actualización del número de entradas disponibles según la categoría elegida.
+5. **Botón de consola `clear`:** Limpieza instantánea de la pantalla sin recargar la aplicación.
+6. **Manejo defensivo y estado sin resultados:** Sanitización de datos, detección de campos vacíos y mensaje informativo seguro ante filtros vacíos.
+7. **Accesibilidad y navegación por teclado:** Atajo mediante tecla <kbd>Enter</kbd> y compatibilidad total con la directiva `prefers-reduced-motion` del sistema operativo.
+8. **Diseño retro responsivo:** Monitor CRT con scanlines, efecto glow y barra de título ventana estilo 80×24.
 
 ---
 
-## 🛠️ Tecnologías
+## 🛠️ 2. Tecnologías utilizadas
 
-El proyecto se construyó bajo una política estricta de **cero dependencias externas y cero frameworks**, priorizando máxima portabilidad y rendimiento:
-
-* **HTML5 semántico:** Estructuración de la ventana terminal (`main`, `header`, `section`, `footer`) y controles de interfaz accesibles (`select`, `button`).
-* **CSS3 moderno (Vanilla CSS):** Paleta temática ámbar fósforo (`#FFB000`, `#0B0C0A`), degradados de líneas de barrido, tipografías monoespaciadas del sistema (`ui-monospace`, `Consolas`, `JetBrains Mono`), sombras glow retro y diseño responsivo sin librerías externas.
-* **JavaScript estándar (Vanilla JS ES6+):** Lógica asíncrona mediante promesas y `requestAnimationFrame` para el efecto de tipeo, manipulación del DOM, arquitectura defensiva de filtrado y control de eventos.
-* **GitHub Actions:** Orquestación del pipeline de integración continua en contenedores Ubuntu.
-* **Node.js (utilidad de análisis en CI):** Utilizado exclusivamente en el entorno virtual de CI para comprobación sintáctica estricta mediante el motor nativo de V8 (`node --check`).
-
----
-
-## 🚀 Instalación y ejecución
-
-El proyecto está diseñado para funcionar de manera inmediata en cualquier entorno moderno:
-
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/MKbenjA9/Evaluacion1Devops.git
-cd Evaluacion1Devops
-```
-
-### 2. Ejecutar la aplicación
-No se requiere instalar dependencias mediante `npm install` ni compilar código. Puede ejecutarse a través de cualquiera de estas alternativas:
-
-* **Opción A (Apertura directa):**
-  Hacer doble clic sobre el archivo `index.html` en el explorador de archivos para abrirlo en su navegador preferido.
-
-* **Opción B (Servidor estático con npx):**
-  ```bash
-  npx serve .
-  ```
-
-* **Opción C (Servidor HTTP con Python):**
-  ```bash
-  python -m http.server 8080
-  ```
-  Luego ingresar a `http://localhost:8080` en el navegador.
+* **Frontend:** HTML5 semántico, CSS3 moderno (Vanilla CSS) y JavaScript puro (Vanilla JS ES6+). Sin frameworks ni dependencias de ejecución.
+* **Contenerización (IE1):** Docker con imagen base no privilegiada `nginxinc/nginx-unprivileged:1.27-alpine`.
+* **Pruebas Automatizadas (IE2):** Runner nativo de pruebas de Node.js (`node:test` y `node:assert/strict`), sin requerir librerías externas de terceros.
+* **Seguridad y Gobernanza (IE3):** Dependabot (`.github/dependabot.yml`), escaneo estático de seguridad SAST con Semgrep y compatibilidad con Snyk.
+* **Integración y Despliegue Continuo (IE4):** GitHub Actions con pipeline orquestado en 5 etapas secuenciales dependientes.
+* **Orquestación (IE5):** Docker Compose (`compose.yaml`) con red interna puente y healthcheck integrado.
 
 ---
 
-## 📁 Estructura del repositorio
+## 📋 3. Requisitos previos
+
+* [Git](https://git-scm.com/) instalado.
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/) (o motor de Docker en Linux) con Docker Compose v2+.
+* [Node.js](https://nodejs.org/) v20+ (únicamente requerido si se desea ejecutar las pruebas unitarias localmente sin Docker).
+
+---
+
+## 📁 4. Estructura real del repositorio
 
 ```text
 Evaluacion1Devops/
 ├── .github/
+│   ├── dependabot.yml          # Configuración de Dependabot (Actions y Docker)
 │   └── workflows/
-│       └── ci.yml          # Workflow de Integración Continua (GitHub Actions)
-├── .gitignore              # Reglas de exclusión de archivos temporales
-├── index.html              # Estructura de la aplicación web y elementos de terminal
-├── phrases.js              # Base de datos local de frases clasificadas y autores
-├── script.js               # Lógica interactiva, filtros, typewriter y manejo de eventos
-├── style.css               # Estilos visuales de terminal CRT ámbar, animaciones y responsive
-└── README.md               # Documentación técnica integral del proyecto
+│       └── ci.yml              # Pipeline CI/CD automatizado de 5 etapas
+├── tests/
+│   └── app.test.js             # Suite de pruebas unitarias automatizadas (node:test)
+├── .dockerignore               # Reglas de exclusión para el build de Docker
+├── Dockerfile                  # Contenedor NGINX Alpine no privilegiado (no-root)
+├── compose.yaml                # Orquestación multicontenedor local con red y healthcheck
+├── .gitignore                  # Exclusión de archivos locales y temporales
+├── index.html                  # Estructura semántica de la terminal
+├── phrases.js                  # Banco de datos de frases estructuradas
+├── script.js                   # Lógica interactiva, filtros y typewriter
+├── style.css                   # Estilos CRT ámbar, animaciones y responsive
+└── README.md                   # Documentación técnica completa
 ```
 
 ---
 
-## 🌳 Estrategia de ramificación: GitFlow
+## 🚀 5. Instalación y ejecución local (sin contenedores)
 
-Para el ciclo de vida del software se implementa de manera estricta el modelo **GitFlow**.
+Dado que es una aplicación Vanilla JS, se puede ejecutar directamente:
 
-```text
-  main  ●───────────────────────────● (Release v1.0.0)
-         \                         /
-develop   ●────────●────────●─────● (Integración continúa)
-           \      / \      /
- feature/   ●────●   \    /         (Nuevas funcionalidades)
-                      \  /
- hotfix/   ────────────●●           (Parche crítico sincronizado)
+* **Opción directa:** Abrir `index.html` en cualquier navegador web.
+* **Servidor local estático:**
+  ```bash
+  # Con npx (Node.js)
+  npx serve .
+
+  # Con Python 3
+  python -m http.server 8080
+  ```
+  Acceder a `http://localhost:8080`.
+
+---
+
+## 🐳 6. Contenerización con Docker (IE1)
+
+Se diseñó un `Dockerfile` optimizado y seguro para servir archivos estáticos con NGINX en modo no root:
+
+* **Imagen base:** `nginxinc/nginx-unprivileged:1.27-alpine` (mínima superficie de ataque, menos de 45 MB).
+* **Seguridad:** El proceso de NGINX se ejecuta bajo el usuario sin privilegios `nginx` (UID 101), evitando ejecución como `root`.
+* **Puerto:** Expone el puerto `8080` (puerto no privilegiado).
+* **Healthcheck:** Monitoreo periódico interno con `wget --spider`.
+
+### Comandos de Docker:
+```bash
+# 1. Construir la imagen Docker localmente
+docker build -t devops-wisdom:v1.0 .
+
+# 2. Ejecutar el contenedor
+docker run -d --name devops-wisdom-container -p 8080:8080 devops-wisdom:v1.0
+
+# 3. Comprobar estado y logs
+docker ps
+docker logs devops-wisdom-container
+
+# 4. Detener y eliminar el contenedor
+docker stop devops-wisdom-container
+docker rm devops-wisdom-container
 ```
 
-### Funciones de cada rama
+---
 
-1. **`main` (Producción):**
-   - Aloja exclusivamente código estable, validado y probado listo para ser desplegado.
-   - Cada commit en `main` representa un hito de entrega o versión formalmente etiquetada (*tag*).
-   - No se envían commits directos a `main`; únicamente recibe fusiones de `develop` (al cerrar versiones) o de `hotfix/*` (ante incidentes críticos).
+## 🧪 7. Pruebas automatizadas en el pipeline (IE2)
 
-2. **`develop` (Integración de Desarrollo):**
-   - Es la rama central de trabajo colaborativo y actúa como el entorno de pre-producción o *staging*.
-   - Concentra la integración continua de todas las características completadas y revisadas.
-   - Sirve como punto de partida para crear ramas `feature/*` y punto de destino para sus Pull Requests.
+Las pruebas están implementadas en `tests/app.test.js` utilizando el runner nativo `node:test` de Node.js v20+, evitando dependencias externas pesadas como Jest o Mocha.
 
-3. **`feature/*` (Ramas de funcionalidad):**
-   - Se desprenden siempre a partir de `develop`.
-   - Se utilizan para construir nuevas funcionalidades de manera aislada (ej. `feature/agregar-filtro-categorias`).
-   - Al culminar el desarrollo, se reintegran a `develop` mediante un Pull Request.
+### Cobertura de las pruebas:
+1. **Integridad de archivos y DOM:** Existencia de `index.html`, `style.css`, `script.js`, `phrases.js`, `Dockerfile` y selectores clave (`#screen`, `#run-btn`, `#category-filter`, etc.).
+2. **Validación del banco de datos:** Comprueba que `PHRASES` sea un arreglo con al menos 10 frases válidas, con texto y autor no vacíos y clasificadas en las categorías permitidas (`git`, `ci-cd`, `cultura`, `infraestructura`).
+3. **Lógica de filtrado y fallback defensivo:** Comprueba el filtrado por categoría, filtros inexistentes y comportamiento ante listas vacías o corruptas.
 
-4. **`hotfix/*` (Ramas de corrección de emergencia):**
-   - Se ramifican directamente desde `main` cuando se descubre un fallo crítico en el entorno de producción que no puede esperar al siguiente ciclo de release.
-   - Una vez resuelto y validado el problema, se integran a `main` y simultáneamente deben sincronizarse de vuelta a `develop` para evitar regresiones futuras.
+### Ejecución de pruebas:
+```bash
+# Ejecutar localmente
+node --test tests/app.test.js
+```
+*Si alguna prueba falla, el comando emite un código de salida `1`, deteniendo inmediatamente el pipeline de CI/CD.*
 
 ---
 
-## 🔀 Convenciones de nomenclatura de ramas
+## 🛡️ 8. Dependabot y seguridad de software (IE3)
 
-Las ramas deben utilizar identificadores en minúsculas (*kebab-case*) acompañados de un prefijo que describa su propósito:
+### A. Dependabot (`.github/dependabot.yml`)
+Monitorea semanalmente las versiones de los componentes utilizados:
+* Ecosistema `github-actions`: Actualización de acciones oficiales (checkout, setup-node, build-push-action, etc.).
+* Ecosistema `docker`: Monitoreo de parches de seguridad sobre la imagen base de NGINX Alpine.
 
-| Tipo de rama | Patrón de nomenclatura | Ejemplo concreto | Cuándo utilizarse |
-| :--- | :--- | :--- | :--- |
-| **Feature** | `feature/<nombre-descriptivo>` | `feature/agregar-filtro-categorias` | Para desarrollar nuevas capacidades o componentes. Nace de `develop` y se integra en `develop`. |
-| **Hotfix** | `hotfix/<nombre-descriptivo>` | `hotfix/corregir-frase-vacia` | Para solucionar errores críticos en el código en producción (`main`). Nace de `main` y se sincroniza con `main` y `develop`. |
-| **Fix / Bugfix** | `fix/<nombre-descriptivo>` | `fix/corregir-estilos` | Para corregir defectos menores durante la fase de desarrollo e integración. Nace de `develop` y se integra en `develop`. |
-| **Docs** | `docs/<nombre-descriptivo>` | `docs/actualizar-readme` | Para actualizaciones y adiciones exclusivas a la documentación técnica del repositorio. |
+### B. Análisis de Seguridad SAST (Semgrep & Snyk)
+* **Semgrep SAST:** Análisis estático de código JavaScript en búsqueda de vulnerabilidades comunes (OWASP Top 10, XSS, inyecciones) sin requerir credenciales externas.
+* **Snyk (Opcional):** Integrado mediante step condicional en GitHub Actions; si se configura el secret `SNYK_TOKEN`, ejecuta análisis de seguridad adicional.
+
+### C. Bloqueo de la entrega (Quality Gate)
+El pipeline aplica bloqueo estricto (*fail-fast*): si Semgrep detecta una vulnerabilidad crítica o si una prueba unitaria falla, el pipeline se aborta y no se avanza a la etapa de construcción de imagen ni de despliegue.
 
 ---
 
-## 📝 Convenciones de commits
+## 🔄 9. Pipeline CI/CD con GitHub Actions (IE4)
 
-El proyecto adopta formalmente el estándar **Conventional Commits** (v1.0.0) para garantizar consistencia en el historial de Git, facilitar auditorías y habilitar la trazabilidad:
+El archivo `.github/workflows/ci.yml` orquesta el flujo de valor completo dividido en 5 trabajos interconectados:
 
-```text
-<tipo>(<alcance opcional>): <descripción concisa en imperativo y minúsculas>
-
-[cuerpo explicativo opcional detallando el motivo del cambio]
-
-[referencias opcionales a Pull Requests o issues]
+```mermaid
+graph TD
+    A[1. Linting & Sintaxis] --> B[2. Pruebas Unitarias]
+    B --> C[3. Seguridad Semgrep SAST]
+    C --> D[4. Docker Build & Trazabilidad]
+    D --> E[5. Despliegue Simulado Docker Compose]
 ```
 
-### Tipos de commits permitidos
+### Detalle de las 5 etapas:
+1. **`lint-and-validate`:** Verifica la presencia de archivos requeridos, sintaxis JS con `node --check` y ausencia de dependencias (`package.json`).
+2. **`unit-tests`:** Ejecuta `node --test tests/app.test.js`. Bloquea el flujo ante cualquier fallo.
+3. **`security-scan`:** Ejecuta análisis estático SAST con Semgrep.
+4. **`docker-build`:** Genera un tag de imagen con trazabilidad basado en el SHA corto del commit (`devops-wisdom:${SHORT_SHA}`) y compila la imagen con Docker Buildx.
+5. **`deploy-simulation`:** Valida `compose.yaml`, levanta el contenedor con Docker Compose, ejecuta un smoke test verificando respuesta `HTTP 200 OK` y desmonta el entorno limpiamente.
 
-* **`feat:`** Nueva funcionalidad introducida en el proyecto.
-  - Ejemplo: `feat: agrega filtro por categoria`
-  - Ejemplo: `feat: agrega boton clear para limpiar la consola`
-* **`fix:`** Corrección de un fallo o error en la aplicación.
-  - Ejemplo: `fix: corrige el estado sin resultados`
-  - Ejemplo: `fix: previene la visualizacion de frases vacias en la terminal`
-* **`docs:`** Modificaciones o adiciones en la documentación.
-  - Ejemplo: `docs: completa el README`
-  - Ejemplo: `docs: documenta la estrategia de integracion de pull requests`
-* **`ci:`** Configuración o ajustes en pipelines de integración continua.
-  - Ejemplo: `ci: integra workflow de validacion`
-  - Ejemplo: `ci: restringe permisos minimos y agrega chequeo de archivos requeridos`
-* **`style:`** Cambios visuales, espaciados o estilos CSS que no modifican la lógica.
-  - Ejemplo: `style: ajusta estilos del filtro`
-  - Ejemplo: `style: anade efectos hover en el selector de categorias`
-* **`refactor:`** Reestructuración de código que no añade funcionalidades ni repara errores.
-  - Ejemplo: `refactor: simplifica funcion de seleccion aleatoria`
-* **`chore:`** Tareas administrativas, mantenimiento o ajustes en `.gitignore`.
-  - Ejemplo: `chore: actualiza reglas de exclusion local`
+### Triggers y ramas de activación:
+* `push` hacia `develop` y `main`.
+* `pull_request` dirigidos a `develop` y `main`.
 
 ---
 
-## 🔍 Estrategia de Pull Requests
+## 📦 10. Orquestación con Docker Compose (IE5)
 
-Los Pull Requests (PR) constituyen el mecanismo obligatorio de control de calidad antes de fusionar cualquier línea de código.
+El archivo `compose.yaml` define el entorno de ejecución multicontenedor:
 
-### Directrices generales de Pull Requests
-1. **Ramas de origen y destino coherentes:**
-   - Para funcionalidades: de `feature/*` hacia `develop`.
-   - Para versiones estables: de `develop` hacia `main`.
-   - Para hotfixes: de `hotfix/*` hacia `main`, y posterior sincronización hacia `develop`.
-2. **Revisión del diff previo a la aprobación:** El revisor asignado debe examinar minuciosamente la pestaña *Files changed*, asegurándose de que:
-   - No existan archivos accidentales (ej. `node_modules`, `.DS_Store`, temporales).
-   - No haya código duplicado ni dependencias externas encubiertas.
-   - El código mantenga la coherencia estilística del proyecto.
-3. **Validación automática de GitHub Actions:** El PR debe contar con el estado exitoso (check verde) del pipeline de CI antes de poder ser fusionado.
-4. **Verificación de conflictos:** La rama debe estar al día con su rama de destino. Si existen conflictos, deben resolverse en la rama de origen antes del merge.
-5. **Criterios de fusión:** Se utiliza la modalidad **Merge Commit (`--no-ff`)** para dejar un registro explícito en el árbol de Git que refleje la unión de ramas.
+```yaml
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: devops-wisdom:local
+    container_name: devops-wisdom-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://127.0.0.1:8080/ || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - app-net
 
-### Ejemplo práctico de Pull Request: `feature/agregar-filtro-categorias` hacia `develop`
+networks:
+  app-net:
+    driver: bridge
+```
 
-* **Título:** `feat: agregar selector y filtro de frases por categorías`
-* **Rama de origen:** `feature/agregar-filtro-categorias`
-* **Rama de destino:** `develop`
-* **Descripción del Pull Request:**
-  > **Resumen del cambio:**  
-  > Se implementa un selector `<select id="category-filter">` en la terminal que permite a los usuarios filtrar frases por `git`, `ci-cd`, `cultura` e `infraestructura`.
-  > 
-  > **Archivos modificados:**
-  > - `index.html`: Incorporación del elemento select accesible.
-  > - `phrases.js`: Clasificación de cada frase con su respectiva categoría.
-  > - `script.js`: Actualización del contador dinámico y adaptación del comando animado para reflejar `devops --quote --category=<categoria>`.
-  > - `style.css`: Estilos visuales retro y diseño adaptado a móviles para el nuevo selector.
-  > 
-  > **Pruebas realizadas:**
-  > - Verificación sintáctica con `node --check`.
-  > - Pruebas en navegador con selección de categorías y comportamiento ante filtros vacíos.
-  > - Comprobación de que la tecla Enter no interfiere con la selección en el menú desplegable.
-  > 
-  > **Estado de CI:** Pipeline de GitHub Actions ejecutado con éxito.
+### Comandos de Docker Compose:
+```bash
+# Validar la sintaxis de compose.yaml
+docker compose config
 
----
+# Levantar el entorno en segundo plano
+docker compose up -d --build
 
-## ⚙️ Integración continua con GitHub Actions
+# Ver el estado y healthcheck
+docker compose ps
 
-El repositorio cuenta con un pipeline automatizado implementado en `.github/workflows/ci.yml`.
+# Consultar los logs
+docker compose logs -f
 
-### Disparadores (*Triggers*)
-El workflow se activa automáticamente bajo los siguientes eventos:
-1. `push` hacia la rama `develop`: Ejecución temprana (*Shift-Left*) ante cada cambio integrado al entorno de desarrollo.
-2. `pull_request` dirigidos a las ramas `main` y `develop`: Calificación y validación estricta previa a la aprobación y fusión de código.
-
-### Aspectos validados por el pipeline
-El job `validate` ejecuta cuatro etapas secuenciales:
-1. **Verificación de archivos esenciales:** Comprueba mediante un script shell que los archivos estructurales obligatorios (`index.html`, `style.css`, `script.js`, `phrases.js`, `README.md`) existan físicamente en el repositorio.
-2. **Preparación de entorno:** Configura el runtime de Node.js v20 sobre el runner `ubuntu-latest`.
-3. **Validación de sintaxis JavaScript:** Ejecuta el comando nativo `node --check script.js` y `node --check phrases.js` para detectar errores léxicos o de sintaxis antes de llegar a los navegadores.
-4. **Política estricta Vanilla JS:** Escanea el espacio de trabajo para comprobar la ausencia total de gestores de paquetes y archivos prohibidos (`package.json`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, carpeta `node_modules`).
-
-### Estado de las ejecuciones y consulta
-* **Ejecución exitosa (Verde):** Todos los archivos requeridos están presentes, el código JS es sintácticamente impecable y no se violó la política de cero dependencias.
-* **Ejecución fallida (Roja):** Se interrumpe el pipeline si falta un archivo estructural, si existe un error de sintaxis en el código JavaScript o si alguien introdujo accidentalmente dependencias de Node.
-* **Consulta de resultados:** Se puede inspeccionar el historial y los logs paso a paso ingresando a la pestaña **Actions** en el repositorio de GitHub: `https://github.com/MKbenjA9/Evaluacion1Devops/actions`.
+# Detener y limpiar el entorno
+docker compose down
+```
 
 ---
 
-## 👥 Flujo de colaboración del equipo
+## 👥 11. GitFlow y estrategia de colaboración
 
-El equipo de trabajo está integrado por:
-* **Benjamin Jerez**
-* **Dylan Monroy**
-* **Nicolas Silva**
-
-### Protocolo de colaboración sin colisiones
-Para colaborar de forma armoniosa y evitar sobreescrituras accidentales, el equipo sigue el siguiente protocolo:
-
-1. **Sincronización inicial:** Cada integrante actualiza su rama `develop` local antes de comenzar cualquier tarea (`git checkout develop && git pull origin develop`).
-2. **Aislamiento por funcionalidades:** Cada miembro crea una rama específica para su asignación (`git checkout -b feature/nombre-tarea develop`).
-3. **Commits atómicos y descriptivos:** Se registran avances en commits pequeños acompañados de mensajes bajo Conventional Commits.
-4. **Publicación y Pull Request:** Se envía la rama a GitHub (`git push -u origin feature/nombre-tarea`) y se abre un Pull Request dirigido hacia `develop`.
-5. **Revisión cruzada y validación:** Otro integrante del equipo inspecciona el Pull Request, verifica que el pipeline de GitHub Actions esté en verde y deja comentarios o aprobación.
-6. **Fusión formal:** El Pull Request es fusionado mediante un commit de integración a `develop`.
-7. **Paso a producción:** Cuando `develop` alcanza un estado de release completo y probado por los tres integrantes, se abre un Pull Request final desde `develop` hacia `main`.
+El proyecto utiliza **GitFlow** para garantizar la separación de entornos:
+* `main`: Producción estable.
+* `develop`: Entorno de integración continua y staging.
+* `feature/pipeline-ci-cd`: Rama de funcionalidad creada para implementar los 5 indicadores de esta evaluación.
+* **Pull Requests:** Toda integración a `develop` requiere pasar por un Pull Request con el pipeline de GitHub Actions en verde.
 
 ---
 
-## 🤖 Declaración de uso de Inteligencia Artificial
+## 🤖 12. Declaración del uso de Inteligencia Artificial
 
-En cumplimiento con los principios de transparencia académica y profesional, declaramos que se utilizó una herramienta de Inteligencia Artificial como asistente de desarrollo para:
-- Diagnosticar el estado del árbol de Git y las inconsistencias de las ramas no integradas.
-- Asistir en la resolución de conflictos de fusión entre las ramas de características y hotfix.
-- Estructurar y redactar la documentación técnica del `README.md` alineada a los estándares de la evaluación.
-- Perfeccionar las comprobaciones de archivos y permisos del flujo de GitHub Actions (`ci.yml`).
+En cumplimiento con los estándares académicos y profesionales, declaramos que se utilizó **Antigravity (Google DeepMind)** como asistente técnico de ingeniería DevOps para:
+1. Diseñar el `Dockerfile` optimizado bajo estándares de no-root con NGINX Alpine unprivileged.
+2. Escribir la suite de pruebas unitarias automatizadas `tests/app.test.js` bajo el runner nativo `node:test`.
+3. Configurar la orquestación reproducible en `compose.yaml` y la gobernanza en `.github/dependabot.yml`.
+4. Estructurar el workflow de GitHub Actions en 5 etapas secuenciales dependientes con trazabilidad y smoke testing.
+5. Redactar y organizar la documentación técnica del `README.md`.
 
-Todos los cambios, integraciones, pruebas sintácticas y verificaciones en el navegador fueron **inspeccionados, validados y ejecutados técnicamente** para asegurar el correcto funcionamiento del software.
+Todas las configuraciones y pruebas fueron ejecutadas y validadas técnicamente en el entorno de desarrollo.
 
 ---
 
-## 📌 Conclusiones del equipo
+## 📌 13. Conclusiones del equipo
 
 ### Benjamin Jerez
-La implementación formal de GitFlow y el uso de Pull Requests nos permitió ordenar el trabajo del equipo, asegurando que cada funcionalidad y corrección pase por una etapa de integración en `develop` antes de tocar `main`. Esto resolvió las confusiones de merges directos y fortaleció la estabilidad del proyecto.
+La implementación de contenedores Docker no privilegiados y la orquestación con Docker Compose facilitó que la aplicación corra de forma idéntica en cualquier máquina sin preocuparse por dependencias locales. La automatización del despliegue simulado en el pipeline garantiza que solo código que realmente levanta sea aprobado.
 
 ### Dylan Monroy
-La adopción de GitHub Actions como puerta de enlace obligatoria demostró la importancia del *Shift-Left Testing*. El pipeline nos garantiza que ningún cambio con errores de sintaxis o dependencias accidentales pueda integrarse a las ramas protegidas, ahorrando tiempo en depuración manual.
-
-## Estrategia de Ramificación: GitFlow
-
-Para la gestión del control de versiones de este proyecto, hemos implementado la estrategia **GitFlow**, ya que permite organizar el desarrollo, integrar las funcionalidades de forma controlada y mantener una versión estable para producción.
-
-- **Ramas principales y de integración:**
-  - `main`: contiene el código estable, probado y listo para producción.
-  - `develop`: integra las funcionalidades y correcciones antes de su incorporación a producción.
-
-- **Ramas de soporte:**
-  - `feature/*`: permiten desarrollar nuevas funcionalidades de forma aislada. Se crean desde `develop` y se integran mediante Pull Requests. Ejemplo: `feature/agregar-filtro-categorias`.
-  - `hotfix/*`: se utilizan para corregir errores críticos detectados en producción. Se crean desde `main` y, una vez validadas, sus cambios se integran tanto en `main` como en `develop`.
-
-Esta estructura mejora la trazabilidad del código, facilita la colaboración entre los integrantes y reduce el riesgo de introducir errores durante las integraciones.
-
----
-
-## Conclusiones
-
-### Benjamin Jerez
-
-La implementación de la estrategia de ramificación nos ha permitido organizar el código de manera ordenada y colaborar sin generar conflictos graves, estableciendo una buena base para el futuro.
-
-### Dylan Monroy
-
-Definir convenciones para los commits y el nombrado de ramas fue importante para mantener un historial limpio y comprensible. Además, el uso de Pull Requests como mecanismo de revisión nos permitió comprender la importancia de verificar los cambios antes de incorporarlos al proyecto.
+La incorporación del runner nativo de pruebas de Node.js nos permitió validar la lógica y los datos sin quebrar la política de Vanilla JS. El bloqueo automático en GitHub Actions demostró la importancia de prevenir que errores lleguen a producción.
 
 ### Nicolas Silva
-
-El desarrollo de este proyecto evidenció la importancia de adoptar buenas prácticas de DevOps desde etapas tempranas. La separación de responsabilidades entre ramas de funcionalidades (`feature/*`) y correcciones urgentes (`hotfix/*`), junto con la documentación de las convenciones de trabajo, contribuye a una colaboración más organizada y a una integración controlada de los cambios.
-
-La experiencia también nos permitió comprender que desarrollar una funcionalidad no es suficiente: es necesario revisarla, probarla e integrarla correctamente para que forme parte del producto final.
+La configuración de Dependabot y Semgrep como puertas de seguridad (Quality Gates) eleva el estándar del proyecto a un nivel profesional de DevOps. El proceso nos enseñó que la seguridad y la observabilidad deben integrarse desde las primeras fases del ciclo de vida del software.

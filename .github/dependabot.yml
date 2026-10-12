@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # Monitoreo y actualización automática de GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "ci"
+      - "dependencies"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+  # Monitoreo de dependencias de la imagen Docker (Dockerfile)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    labels:
+      - "docker"
+      - "security"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
