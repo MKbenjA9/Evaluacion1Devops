@@ -1,6 +1,6 @@
 # Dockerfile — devops-wisdom
 # Servidor web estático liviano y seguro basado en NGINX Alpine no-root
-FROM nginxinc/nginx-unprivileged:1.27-alpine
+FROM nginxinc/nginx-unprivileged:1.31-alpine
 
 # Etiqueta de metadatos y trazabilidad
 LABEL maintainer="Equipo DevOps <DOY0101>" \
