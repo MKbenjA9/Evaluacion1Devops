@@ -1,0 +1,187 @@
+name: CI/CD Pipeline & Quality Gate
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+  pull_request:
+    branches:
+      - develop
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # ==========================================
+  # ETAPA 1: Validación e Integridad de Código
+  # ==========================================
+  lint-and-validate:
+    name: 1. Linting & Sintaxis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js (v20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validar presencia de archivos obligatorios
+        run: |
+          echo "🔍 Verificando estructura obligatoria del proyecto..."
+          REQUIRED_FILES=("index.html" "style.css" "script.js" "phrases.js" "Dockerfile" "compose.yaml" "README.md")
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ ERROR: Falta el archivo esencial requerido '$file'."
+              exit 1
+            fi
+          done
+          echo "✅ Todos los archivos requeridos están presentes."
+
+      - name: Verificar sintaxis de JavaScript (node --check)
+        run: |
+          echo "🔍 Verificando sintaxis JavaScript..."
+          node --check script.js
+          node --check phrases.js
+          node --check tests/app.test.js
+          echo "✅ Sintaxis JavaScript correcta."
+
+      - name: Validar política Vanilla JS (Cero dependencias externas en producción)
+        run: |
+          echo "🔍 Validando política Vanilla JS..."
+          FORBIDDEN_FILES=("package.json" "package-lock.json" "yarn.lock" "pnpm-lock.yaml" "node_modules")
+          for file in "${FORBIDDEN_FILES[@]}"; do
+            if [ -e "$file" ]; then
+              echo "❌ ERROR: Se detectó '$file'. El proyecto debe ser Vanilla JS sin dependencias npm."
+              exit 1
+            fi
+          done
+          echo "✅ Verificación exitosa: 100% Vanilla JS puro."
+
+  # ==========================================
+  # ETAPA 2: Pruebas Unitarias Automatizadas (IE2)
+  # ==========================================
+  unit-tests:
+    name: 2. Pruebas Unitarias Automatizadas
+    needs: lint-and-validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js (v20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Ejecutar Suite de Pruebas Unitarias (node --test)
+        run: |
+          echo "🧪 Ejecutando pruebas unitarias con el runner nativo node:test..."
+          node --test tests/app.test.js
+          echo "✅ Todas las pruebas unitarias pasaron exitosamente."
+
+  # ==========================================
+  # ETAPA 3: Seguridad, SAST y Dependencias (IE3)
+  # ==========================================
+  security-scan:
+    name: 3. Análisis de Seguridad & Gobernanza
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Análisis SAST con Semgrep (Seguridad en código fuente)
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: >-
+            p/javascript
+            p/owasp-top-10
+        continue-on-error: false
+
+      - name: Análisis de Seguridad con Snyk (Opcional según token)
+        if: env.SNYK_TOKEN != ''
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          command: code test
+        continue-on-error: true
+
+  # ==========================================
+  # ETAPA 4: Construcción de Imagen Docker & Trazabilidad (IE1 & IE4)
+  # ==========================================
+  docker-build:
+    name: 4. Docker Build & Trazabilidad
+    needs: security-scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Generar metadatos de versión y trazabilidad
+        id: meta
+        run: |
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          echo "commit_sha=${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "image_tag=devops-wisdom:${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          echo "📌 Trazabilidad generada: Tag de imagen devops-wisdom:${SHORT_SHA}"
+
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Construir imagen Docker
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          tags: |
+            devops-wisdom:latest
+            devops-wisdom:${{ steps.meta.outputs.commit_sha }}
+
+  # ==========================================
+  # ETAPA 5: Despliegue en Entorno Simulado & Verificación (IE4 & IE5)
+  # ==========================================
+  deploy-simulation:
+    name: 5. Despliegue Automatizado (Docker Compose)
+    needs: docker-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+
+      - name: Validar configuración de Docker Compose
+        run: |
+          echo "🐳 Validando compose.yaml..."
+          docker compose config
+
+      - name: Desplegar entorno simulado con Docker Compose
+        run: |
+          echo "🚀 Desplegando contenedor con Docker Compose..."
+          docker compose up -d --build
+          echo "Contenedor iniciado. Esperando a que el servicio esté operativo..."
+          sleep 5
+
+      - name: Verificación posterior al despliegue (Smoke & Healthcheck)
+        run: |
+          echo "🏥 Verificando estado y respuesta HTTP del servicio desplegado..."
+          docker compose ps
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || true)
+          echo "Código HTTP recibido: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "❌ ERROR: La aplicación no respondió con código HTTP 200 (recibido: $HTTP_STATUS)."
+            docker compose logs
+            exit 1
+          fi
+          echo "✅ Smoke test exitoso: La aplicación responde 200 OK en http://localhost:8080/"
+
+      - name: Detener entorno simulado
+        if: always()
+        run: |
+          echo "🛑 Desmontando entorno de despliegue simulado..."
+          docker compose down

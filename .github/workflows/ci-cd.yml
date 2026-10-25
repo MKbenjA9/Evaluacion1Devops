@@ -1,0 +1,77 @@
+name: CI/CD Pipeline - Evaluación Parcial 2
+
+on:
+  push:
+    branches: 
+      - Principal
+      - main
+      - Desarrollo
+      - develop
+      - 'feature/**'
+      - 'Feature/**'
+      - 'hotfix/**'
+      - 'Hotfix/**'
+  pull_request:
+    branches: 
+      - Principal
+      - main
+      - Desarrollo
+      - develop
+
+jobs:
+  test:
+    name: Pruebas Automatizadas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Ejecutar pruebas unitarias
+        run: npm test
+
+  security:
+    name: Análisis de Seguridad
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Escaneo de Seguridad con Snyk
+        if: ${{ secrets.SNYK_TOKEN != '' }}
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Aviso si SNYK_TOKEN no está presente
+        if: ${{ secrets.SNYK_TOKEN == '' }}
+        run: echo "AVISO: SNYK_TOKEN no está configurado en los Repository Secrets de GitHub."
+
+  build-and-deploy:
+    name: Construcción y Despliegue Simulado
+    needs: [test, security]
+    if: >
+      github.ref == 'refs/heads/Principal' || 
+      github.ref == 'refs/heads/main' || 
+      github.ref == 'refs/heads/Desarrollo' || 
+      github.ref == 'refs/heads/develop' || 
+      github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Construir imagen Docker
+        run: docker build -t evaluacion2-app:${{ github.ref_name }} .
+
+      - name: Validar Orquestación con Docker Compose
+        run: |
+          docker compose config
+          docker compose up -d
+          docker compose ps
+          docker compose down
