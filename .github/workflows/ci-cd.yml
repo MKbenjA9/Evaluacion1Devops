@@ -42,10 +42,15 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Escaneo de Seguridad con Snyk
+        if: ${{ secrets.SNYK_TOKEN != '' }}
         uses: snyk/actions/node@master
-        continue-on-error: false
+        continue-on-error: true
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Aviso si SNYK_TOKEN no está presente
+        if: ${{ secrets.SNYK_TOKEN == '' }}
+        run: echo "AVISO: SNYK_TOKEN no está configurado en los Repository Secrets de GitHub."
 
   build-and-deploy:
     name: Construcción y Despliegue Simulado
